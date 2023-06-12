@@ -13,9 +13,20 @@ int main(int argc, char *argv[])
     (void)signal(SIGINT, handleSigInt);
 
     struct sockaddr_in servaddr;
+    char *ip;                // IP broadcast address
+    unsigned short port;     // server port
     int broadcastPermission; // socket opt to set permission to broadcast
 
-    // Создание UDP сокета
+    if (argc < 4)
+    {
+        fprintf(stderr, "Usage: %s <IP Address> <Port> <Programmer ID>\n", argv[0]);
+        exit(1);
+    }
+    ip = argv[1];
+    port = atoi(argv[2]);
+    int programmer_id = atoi(argv[3]);
+
+    // create socket with UDP options
     sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
     if (sock == -1)
     {
@@ -29,84 +40,65 @@ int main(int argc, char *argv[])
         dieWithError("setsockopt() failed");
     }
 
+    // setup local address structure
     memset(&servaddr, 0, sizeof(servaddr));
-
-    // Установка адреса и порта сервера
     servaddr.sin_family = AF_INET;
-    servaddr.sin_port = htons(7004);
-    servaddr.sin_addr.s_addr = inet_addr("127.0.0.1"); // IP-адрес сервера
-
-    if (argc < 2)
-    {
-        dieWithError("invalid arguments");
-    }
-
-    int programmer_id = atoi(argv[1]);
+    servaddr.sin_port = htons(port);
+    servaddr.sin_addr.s_addr = inet_addr(ip);
 
     struct request request;
     request.request_code = GET_WORK;
     request.programmer_id = programmer_id;
+    struct response response;
 
     for (;;)
     {
-
-        /*
-        request.task.id = NEW;
-        request.task.executor_id = -1;
-        request.task.checker_id = -1;
-        request.task.status = -1;*/
-
-        // Отправка запроса серверу
-
+        // send request to server
+        if (sendto(sock, &request, sizeof(struct request), 0, (struct sockaddr *)&servaddr, sizeof(servaddr)) != sizeof(request))
+        {
+            dieWithError("sendto() failed");
+        }
         printf("programmer#%d has sent request with code = %d\n", request.programmer_id, request.request_code);
 
-        sendto(sock, &request, sizeof(struct request), 0, (struct sockaddr *)&servaddr, sizeof(servaddr));
-
-        struct response response;
-
-        // Ожидание ответа от сервера
-        recvfrom(sock, &response, sizeof(struct response), 0, NULL, NULL);
-
-        printf("Response code: %d\n", response.response_code);
-        /*
-        printf("Task ID: %d\n", response.task.id);
-        printf("Executor ID: %d\n", response.task.executor_id);
-        printf("Checker ID: %d\n", response.task.checker_id);
-        printf("Status: %d\n", response.task.status);*/
+        // receive response from server
+        if (recvfrom(sock, &response, sizeof(struct response), 0, NULL, NULL) != sizeof(response))
+        {
+            dieWithError("recvfrom() failed");
+        }
+        printf("response code: %d\n", response.response_code);
 
         if (response.response_code == FINISH)
         {
             break;
         }
-
+        // change request depending on response
         switch (response.response_code)
         {
         case UB:
             break;
         case NEW_TASK:
-            sleep(1);
-            // request.task = response.task;
+            sleep(3);
             request.request_code = SEND_TASK;
             break;
         case CHECK_TASK:
-            sleep(1);
+            sleep(3);
             request.request_code = SEND_CHECK;
             break;
         case FIX_TASK:
-            sleep(1);
-            // request.task = response.task;
+            sleep(3);
             request.request_code = SEND_TASK;
             break;
+        case FINISH:
+            close(sock);
+            exit(0);
         default:
             request.request_code = GET_WORK;
             break;
         }
-
-        sleep(3);
+        sleep(5);
     }
 
-    // Закрытие сокета
+    // close socket
     close(sock);
-
-    return 0;
+    exit(0);
 }
