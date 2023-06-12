@@ -141,25 +141,25 @@ void sendCheckResult(struct response *response, int programmer_id)
         if (for_check[i].checker_id == programmer_id && for_check[i].status == CHECKING)
         {
             curCheck = for_check[i];
-            break;
+            // break;
+            if (curCheck.status != CHECKING)
+            {
+                printf("task is not checking now...\n");
+                printf("task current status = %d\n", curCheck.status);
+                response->response_code = 10;
+                return;
+            }
+            // imitating check
+            int8_t result = rand() % 2;
+            printf("the result of checking task with id = %d is %d\n", curCheck.id, result);
+            curCheck.status = result == 0 ? WRONG : RIGHT;
+            tasks[curCheck.id] = curCheck;
+            if (curCheck.status == RIGHT)
+            {
+                ++complete_count;
+                printf("\n\n!!!!!!!!\tComplete count = %d\t!!!!!!!!!!\n\n", complete_count);
+            }
         }
-    }
-    if (curCheck.status != CHECKING)
-    {
-        printf("task is not checking now...\n");
-        printf("task current status = %d\n", curCheck.status);
-        response->response_code = 10;
-        return;
-    }
-    // imitating check
-    int8_t result = rand() % 2;
-    printf("the result of checking task with id = %d is %d\n", curCheck.id, result);
-    curCheck.status = result == 0 ? WRONG : RIGHT;
-    tasks[curCheck.id] = curCheck;
-    if (curCheck.status == RIGHT)
-    {
-        ++complete_count;
-        printf("\n\n!!!!!!!!\tComplete count = %d\t!!!!!!!!!!\n\n", complete_count);
     }
 }
 
