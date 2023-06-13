@@ -6,6 +6,7 @@ void handleSigInt(int sig)
     {
         return;
     }
+    printf("\n\nFINISH USING SIGINT\n\n");
     closeAll();
     exit(0);
 }

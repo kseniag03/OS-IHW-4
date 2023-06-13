@@ -4,7 +4,6 @@ int sock;
 
 void closeAll()
 {
-    printf("\n\nFINISH CLIENT USING SIGINT\n\n");
     close(sock);
 }
 

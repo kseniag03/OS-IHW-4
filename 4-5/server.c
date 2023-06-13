@@ -7,14 +7,9 @@ void printTasksInfo();
 
 int sock;
 
-sem_t sem, print;
-
 void closeAll()
 {
-    printf("\n\nFINISH SERVER USING SIGINT\n\n");
     printTasksInfo();
-    sem_destroy(&sem);
-    sem_destroy(&print);
     close(sock);
 }
 
@@ -40,12 +35,10 @@ void initPulls()
 
 void printTasksInfo()
 {
-    sem_wait(&print);
     for (int j = 0; j < tasks_count; ++j)
     {
         printf("task with id = %d and status = %d, executed by programmer #%d, checked by programmer %d\n", tasks[j].id, tasks[j].status, tasks[j].executor_id, tasks[j].checker_id);
     }
-    sem_post(&print);
 }
 
 void getWork(struct response *response, int programmer_id)
@@ -209,11 +202,10 @@ int main(int argc, char *argv[])
     struct response response;
 
     initPulls();
+    printf("pulls have been initialized\n");
 
     while (complete_count < tasks_count)
     {
-        sem_wait(&sem);
-
         printf("Server listening...\n");
 
         // receive request from client
@@ -250,11 +242,9 @@ int main(int argc, char *argv[])
 
         // send response to client
         sendto(sock, &response, sizeof(struct response), 0, (struct sockaddr *)&cliaddr, len);
-
-        sem_post(&sem);
     }
+
     // finish socket work
-    printTasksInfo();
-    close(sock);
+    closeAll();
     return 0;
 }
