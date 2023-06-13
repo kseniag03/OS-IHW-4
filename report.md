@@ -4,8 +4,8 @@
 ### 1. Ганина Ксения Андреевна 212 (тг для вопросов: @kgnn47) <br> ###
 ### 2. Вариант-21 <br> ###
 
-![image](https://github.com/kseniag03/OS-IHW-4/assets/114473740/64db0a49-c50c-4062-bc81-a17c0723ad51)
-![image](https://github.com/kseniag03/OS-IHW-3/assets/114473740/e8ead5cf-0696-4d48-9ba4-db46f0239a00)
+![image](https://github.com/kseniag03/OS-IHW-4/blob/master/4-5/task_1.png)
+![image](https://github.com/kseniag03/OS-IHW-4/blob/master/4-5/task_2.png)
 ________________________
 
 ### 3. Содержание отчёта <br> ###
@@ -124,10 +124,8 @@ ________________________
 
 #### 4-5.3. Тестовые прогоны <br> ####
 
-На одном устройстве:
-
-..
-
-На разных устройствах:
-
-..
+![image](https://github.com/kseniag03/OS-IHW-4/blob/master/4-5/4-5_1_1.png)
+![image](https://github.com/kseniag03/OS-IHW-4/blob/master/4-5/4-5_1_2.png)
+![image](https://github.com/kseniag03/OS-IHW-4/blob/master/4-5/4-5_1_3.png)
+![image](https://github.com/kseniag03/OS-IHW-4/blob/master/4-5/4-5_2_1.png)
+![image](https://github.com/kseniag03/OS-IHW-4/blob/master/4-5/4-5_2_2.png)
